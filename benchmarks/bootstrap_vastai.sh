@@ -76,8 +76,10 @@ git log --pretty="%h %G? %s" -1
 
 # ── 3. Install Python deps for the torch baseline ──────────────────────────
 echo ">>> Installing qwen_asr + huggingface_hub ..."
-pip install --quiet --upgrade pip
-pip install --quiet qwen_asr huggingface_hub
+# vastai/pytorch ships with a Debian-managed pip 24.0 which refuses to
+# upgrade itself (no RECORD file). Use --break-system-packages to install
+# into the system site-packages directly.
+pip3 install --break-system-packages --quiet qwen_asr huggingface_hub
 $PYTHON -c "import qwen_asr; print('qwen_asr OK')"
 
 # ── 4. Download the Qwen3-ASR-0.6B model ──────────────────────────────────
