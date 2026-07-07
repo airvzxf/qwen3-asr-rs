@@ -115,20 +115,31 @@ file target/release/benchmark
 # ── 6. Define the run helper ────────────────────────────────────────────────
 run_rust() {
     local label="$1"
-    local extra="${2:-}"
+    local native_bf16="${2:-0}"
     echo
     echo "=========================================="
     echo "  Rust CUDA benchmark: $label"
     echo "=========================================="
     local start=$(date +%s)
-    # shellcheck disable=SC2086
-    time $extra ./target/release/benchmark \
-        --model-dir "$MODEL_DIR" \
-        --audio-dir tests/fixtures/audio \
-        --runs 10 --warmup 1 \
-        --label "$label" \
-        --json-out "$RESULTS_DIR/$label.json" \
-        --markdown-out "$RESULTS_DIR/$label.md"
+    # env vars (e.g. QWEN3_ASR_CUDA_NATIVE_BF16) are passed via env(1) to
+    # avoid bash parsing ambiguity with `time VAR=val command`.
+    if [ "$native_bf16" = "1" ]; then
+        env QWEN3_ASR_CUDA_NATIVE_BF16=1 time ./target/release/benchmark \
+            --model-dir "$MODEL_DIR" \
+            --audio-dir tests/fixtures/audio \
+            --runs 10 --warmup 1 \
+            --label "$label" \
+            --json-out "$RESULTS_DIR/$label.json" \
+            --markdown-out "$RESULTS_DIR/$label.md"
+    else
+        time ./target/release/benchmark \
+            --model-dir "$MODEL_DIR" \
+            --audio-dir tests/fixtures/audio \
+            --runs 10 --warmup 1 \
+            --label "$label" \
+            --json-out "$RESULTS_DIR/$label.json" \
+            --markdown-out "$RESULTS_DIR/$label.md"
+    fi
     local end=$(date +%s)
     echo "  -> $label.json written ($((end - start))s wall)"
 }
@@ -166,11 +177,11 @@ run_rust "rust-cpu-batch"
 # ── 8. Run the Rust CUDA scenarios ─────────────────────────────────────────
 # 8a. F32 path: BF16→F32 conversion on (the original unrefined patch behavior).
 #     This is the path the user's patch was originally designed for.
-run_rust "rust-cuda-f32"
+run_rust "rust-cuda-f32" 0
 
 # 8b. BF16 native path: env var skips the conversion. Represents what candle
 #     would do on sm_80+ without the workaround.
-run_rust "rust-cuda-bf16" "QWEN3_ASR_CUDA_NATIVE_BF16=1"
+run_rust "rust-cuda-bf16" 1
 
 # ── 9. Run the torch baselines ─────────────────────────────────────────────
 run_torch "torch-cpu" "cpu"
