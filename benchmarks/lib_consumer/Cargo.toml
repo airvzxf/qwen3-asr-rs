@@ -1,0 +1,20 @@
+[package]
+name = "qwen3-asr-lib-consumer"
+version = "0.1.0"
+edition = "2021"
+description = "Demonstrates using qwen3-asr as a library dependency from a separate Rust crate."
+publish = false
+
+[dependencies]
+# Path dependency on the local fork. In a real project, this would be:
+# qwen3-asr = "0.2"
+qwen3-asr = { path = "../..", default-features = false }
+anyhow = "1"
+
+[[bin]]
+name = "qwen3-asr-lib-consumer"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = false

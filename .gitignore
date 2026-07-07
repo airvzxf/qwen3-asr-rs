@@ -27,3 +27,12 @@ compat_test/
 
 # Claude Code
 CLAUDE.md
+
+# Session artifacts (kept local, not part of the project)
+# PROPOSAL.md is the personal analysis document that led to the
+# benchmark work; not part of the crate source.
+PROPOSAL.md
+# 3.8 MB audio sample used for ad-hoc testing.
+test.wav
+# Screenshots from pricing/console pages captured during research.
+vast-ai-console.png

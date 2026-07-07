@@ -1,0 +1,9 @@
+# Generated artifacts
+/target/
+/Cargo.lock.bak
+
+# Lib consumer builds
+/lib_consumer/target/
+
+# venv (if someone re-creates it inside the repo)
+/.venv/

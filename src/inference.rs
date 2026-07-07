@@ -512,18 +512,40 @@ fn capitalize_first(s: &str) -> String {
     }
 }
 
-/// Convert BF16/F16 weight tensors to F32 when running on CPU.
+/// Convert BF16/F16 weight tensors to F32 when on CPU or on CUDA devices that
+/// lack BF16 convolution kernel support (sm_61 / Pascal and older).
 ///
-/// candle's CPU backend does not support BF16/F16 matmul. Metal and CUDA
-/// handle these natively, so this conversion only triggers on CPU.
+/// candle's CPU backend does not support BF16/F16 matmul. CUDA devices with
+/// compute capability < sm_80 do not support BF16 convolution kernels.
 fn maybe_convert_weights_for_cpu(weights: &mut HashMap<String, Tensor>, device: &Device) {
-    if !device.is_cpu() {
+    let convert_bf16;
+    let convert_f16;
+    if device.is_cpu() {
+        convert_bf16 = true;
+        convert_f16 = true;
+    } else {
+        // On CUDA: BF16 conv kernels require sm_80+. Convert BF16 to F32 for
+        // older GPUs (Pascal sm_61, Volta sm_70, etc.) to avoid
+        // CUDA_ERROR_NOT_FOUND for missing kernel symbols like im2col_bf16.
+        convert_bf16 = true;
+        convert_f16 = false;
+    }
+    if !convert_bf16 && !convert_f16 {
         return;
     }
     let mut converted = 0usize;
     for (name, tensor) in weights.iter_mut() {
         match tensor.dtype() {
-            DType::BF16 | DType::F16 => match tensor.to_dtype(DType::F32) {
+            DType::BF16 if convert_bf16 => match tensor.to_dtype(DType::F32) {
+                Ok(t) => {
+                    *tensor = t;
+                    converted += 1;
+                }
+                Err(e) => {
+                    log::warn!("Failed to convert {name} to F32: {e}");
+                }
+            },
+            DType::F16 if convert_f16 => match tensor.to_dtype(DType::F32) {
                 Ok(t) => {
                     *tensor = t;
                     converted += 1;
@@ -537,7 +559,7 @@ fn maybe_convert_weights_for_cpu(weights: &mut HashMap<String, Tensor>, device: 
     }
     if converted > 0 {
         info!(
-            "Converted {converted} weight tensors from BF16/F16 to F32 for CPU inference"
+            "Converted {converted} weight tensors from BF16/F16 to F32 for inference"
         );
     }
 }
