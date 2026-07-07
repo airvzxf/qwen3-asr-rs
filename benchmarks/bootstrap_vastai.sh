@@ -181,7 +181,7 @@ nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
 echo
 echo "  CPU: $(lscpu | grep 'Model name' | awk -F: '{print $2}' | xargs)"
 echo "  RAM: $(free -h | grep Mem | awk '{print $2}')"
-echo "  PyTorch: $(python -c 'import torch; print(torch.__version__)')"
+echo "  PyTorch: $($PYTHON -c 'import torch; print(torch.__version__)')"
 echo "  Rust:    $(rustc --version)"
 echo
 
