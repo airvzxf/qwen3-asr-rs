@@ -517,6 +517,10 @@ fn capitalize_first(s: &str) -> String {
 ///
 /// candle's CPU backend does not support BF16/F16 matmul. CUDA devices with
 /// compute capability < sm_80 do not support BF16 convolution kernels.
+///
+/// Override: set the env var `QWEN3_ASR_CUDA_NATIVE_BF16=1` to keep the
+/// native BF16 weights on CUDA (skips the conversion even on Pascal-class
+/// hardware; useful for benchmarking the BF16 path on sm_80+).
 fn maybe_convert_weights_for_cpu(weights: &mut HashMap<String, Tensor>, device: &Device) {
     let convert_bf16;
     let convert_f16;
@@ -527,6 +531,17 @@ fn maybe_convert_weights_for_cpu(weights: &mut HashMap<String, Tensor>, device: 
         // On CUDA: BF16 conv kernels require sm_80+. Convert BF16 to F32 for
         // older GPUs (Pascal sm_61, Volta sm_70, etc.) to avoid
         // CUDA_ERROR_NOT_FOUND for missing kernel symbols like im2col_bf16.
+        // Env var override: assume the CUDA device has BF16 kernels (sm_80+).
+        let native_bf16 = std::env::var("QWEN3_ASR_CUDA_NATIVE_BF16")
+            .map(|v| v == "1" || v.eq_ignore_ascii_case("true") || v.eq_ignore_ascii_case("yes"))
+            .unwrap_or(false);
+        if native_bf16 {
+            log::info!(
+                "QWEN3_ASR_CUDA_NATIVE_BF16 set: keeping native BF16 weights on CUDA \
+                 (no BF16→F32 conversion)"
+            );
+            return;
+        }
         convert_bf16 = true;
         convert_f16 = false;
     }
