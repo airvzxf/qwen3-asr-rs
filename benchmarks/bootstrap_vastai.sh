@@ -24,13 +24,14 @@ RESULTS_DIR="$REPO_DIR/benchmarks/results"
 REPO_URL="https://github.com/airvzxf/qwen3-asr-rs.git"
 BRANCH="bench/compare-rust-vs-torch"
 
-# vastai/pytorch template doesn't ship a `python` symlink (only `python3`).
-# Normalize early so all subsequent `python ...` invocations work.
-if ! command -v python >/dev/null 2>&1; then
-    PYTHON="python3"
-else
-    PYTHON="python"
-fi
+# The vastai/pytorch image ships a preinstalled PyTorch venv at /venv/main
+# (with torch + torchvision + huggingface-hub already in it). Use it as the
+# source of truth for Python and pip — installing into system site-packages
+# (--break-system-packages) is a hack that breaks the principle.
+source /venv/main/bin/activate
+PYTHON="python"        # now points to /venv/main/bin/python (with torch)
+PIP="pip"              # venv's pip
+PIP_FLAGS=()            # no --break-system-packages needed inside a venv
 
 # If running inside a vast.ai Docker container, CUDA_COMPUTE_CAP is auto-detected
 # from the GPU. We override here as a safety net (the env var is read by
@@ -75,12 +76,9 @@ git rev-parse HEAD
 git log --pretty="%h %G? %s" -1
 
 # ── 3. Install Python deps for the torch baseline ──────────────────────────
-echo ">>> Installing qwen_asr + huggingface_hub ..."
-# vastai/pytorch ships with a Debian-managed pip 24.0 which refuses to
-# upgrade itself (no RECORD file). Use --break-system-packages to install
-# into the system site-packages directly.
-pip3 install --break-system-packages --quiet qwen_asr huggingface_hub
-$PYTHON -c "import qwen_asr; print('qwen_asr OK')"
+echo ">>> Installing qwen_asr + huggingface_hub into /venv/main ..."
+$PIP install --quiet "${PIP_FLAGS[@]}" qwen_asr huggingface_hub
+$PYTHON -c "import qwen_asr, torch, huggingface_hub; print('qwen_asr OK | torch', torch.__version__, 'cuda', torch.version.cuda)"
 
 # ── 4. Download the Qwen3-ASR-0.6B model ──────────────────────────────────
 mkdir -p "$(dirname "$MODEL_DIR")"
