@@ -82,15 +82,22 @@ $PYTHON -c "import qwen_asr, torch, huggingface_hub; print('qwen_asr OK | torch'
 
 # ── 4. Download the Qwen3-ASR-0.6B model ──────────────────────────────────
 mkdir -p "$(dirname "$MODEL_DIR")"
-if [ ! -f "$MODEL_DIR/model.safetensors" ]; then
+if [ ! -f "$MODEL_DIR/model.safetensors" ] || [ ! -f "$MODEL_DIR/tokenizer.json" ]; then
     echo ">>> Downloading Qwen/Qwen3-ASR-0.6B (1.7 GB) ..."
     $PYTHON -c "
 from huggingface_hub import snapshot_download
+# Be explicit: 'tokenizer.json' is a critical file but huggingface_hub's
+# '*.json' pattern can drop it on this model snapshot. List everything we need.
 snapshot_download('Qwen/Qwen3-ASR-0.6B', local_dir='$MODEL_DIR',
-                  allow_patterns=['*.json', '*.safetensors'])
+                  allow_patterns=[
+                      'config.json', 'preprocessor_config.json',
+                      'tokenizer.json', 'tokenizer_config.json',
+                      'vocab.json', 'merges.txt', 'chat_template.json',
+                      'generation_config.json', 'model.safetensors',
+                  ])
 "
 else
-    echo ">>> Model already present at $MODEL_DIR"
+    echo ">>> Model already present at $MODEL_DIR (with tokenizer.json)"
 fi
 ls -lh "$MODEL_DIR" | head
 
