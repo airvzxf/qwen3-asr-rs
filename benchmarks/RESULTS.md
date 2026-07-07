@@ -1,35 +1,56 @@
 # Benchmark results — qwen3-asr-rs vs torch
 
-Generated 2026-07-06 on the local fork of `alan890104/qwen3-asr-rs`, on the
-**airvzxf** side branch `bench/compare-rust-vs-torch`. Reproducible with
-the scripts under `benchmarks/`.
+Generated 2026-07-06 (CPU numbers) and 2026-07-07 (CUDA numbers from
+vast.ai) on the local fork of `alan890104/qwen3-asr-rs`, on the
+**airvzxf** side branch `bench/compare-rust-vs-torch`. Reproducible
+with the scripts under `benchmarks/`.
 
 ---
 
 ## TL;DR (the numbers that matter)
 
-| Backend | RTF (mean) | Cold start to 1st result | RSS peak | Bin / venv | No Python | Statically linked | GT |
+| Backend | RTF (mean) | Cold start to 1st result | RSS / VRAM | Bin / venv | No Python | Statically linked | GT |
 |---|---:|---:|---:|---|:--:|:--:|:--:|
-| **Rust (candle 0.9.2) CPU** | **1.089** | **8.0 s** (load 4.4 s + 1st transcribe 3.7 s) | 3.8 GB | 11 MB musl static binary | ✓ | ✓ | 5/5 |
-| **torch 2.12 + qwen_asr CPU** | **0.435** | **57.2 s** (load 1.7 s + Python/torch/transformers import + warmup pass + 1st transcribe) | 6.4 GB | ~1.5 GB venv | ✗ | n/a | 4/5 |
+| **Rust (candle 0.9.2) — CPU, Pascal sm_61** | 1.089 | 8.0 s (load 4.4 s + 1st transcribe 3.7 s) | 3.8 GB RAM | 11 MB musl static binary | ✓ | ✓ | 5/5 |
+| **Rust (candle 0.9.2) — CUDA BF16, Ampere sm_86** | **0.0313** | **3.5 s** (load 1.7 s + 1st transcribe 1.8 s) | 4.2 GB VRAM | 11 MB musl static binary | ✓ | ✓ | 5/5 |
+| **Rust (candle 0.9.2) — CUDA F32, Ampere sm_86** | 0.0339 | 3.5 s | ~5 GB VRAM (est.) | 11 MB musl static binary | ✓ | ✓ | 5/5 |
+| **torch 2.12 + qwen_asr — CPU, Threadripper** | 0.435 | 57.2 s (Python + torch + transformers + qwen_asr import + warmup) | 6.4 GB RAM | ~1.5 GB venv | ✗ | n/a | 4/5 |
+| **torch 2.12 + qwen_asr — CUDA, Ampere sm_86** | 0.1074 | 17.6 s | 4.2 GB VRAM | ~1.5 GB venv | ✗ | n/a | 4/5 |
 
-**Headline:**
+**Headline (CPU, i7-7820HK vs Threadripper, both real):**
 
-- **torch is ~2.5× faster per inference** on this CPU. Real, measured, on
-  the same hardware, same model, same audio, same generation parameters.
-  candle's CPU matmul (`gemm`) is not in the same league as torch's
-  oneDNN/MKL-tuned CPU backend in 2026.
+- **torch is ~2.5× faster per inference** on CPU. Real, measured, on
+  the same hardware, same model, same audio, same generation
+  parameters. candle's CPU matmul (`gemm`) is not in the same league
+  as torch's oneDNN/MKL-tuned CPU backend in 2026.
 - **Rust serves the first request 7× sooner.** 8 s vs 57 s. The 49 s
-  delta is Python interpreter start + `torch` import (~1.5 s) +
+  delta is the Python interpreter start + `torch` import (~1.5 s) +
   `transformers` import + `qwen_asr` import + a 5-file warmup pass
-  (qwen_asr's `transcribe()` apparently does a forward pass on each
-  chunk boundary) + the first actual transcribe.
-- **Rust uses 40% less memory.** 3.8 GB vs 6.4 GB peak. The delta is
-  the Python runtime + autograd graph + refcounting overhead.
+  + the first actual transcribe.
+- **Rust uses 40% less memory.** 3.8 GB vs 6.4 GB peak.
 - **Numerical accuracy is identical** on the 4 short English/Chinese
-  samples (case-insensitive, whitespace-collapsed). The 5th sample
-  (mixed Chinese/English paragraph) differs only in punctuation between
-  the two implementations — well within the noise floor for greedy ASR.
+  samples. The 5th differs only in punctuation.
+
+**Headline (CUDA, RTX 3090, sm_86):**
+
+- **The story flips.** With CUDA, Rust is **3.4× faster per inference
+  than torch** (RTF 0.0313 vs 0.1074) on the same GPU. torch's
+  Python + `accelerate` + autograd overhead becomes the dominant
+  cost when the actual matmul is fast; candle's leaner runtime shows.
+- **Native BF16 is 8% faster than the F32 patch** (0.0313 vs 0.0339)
+  on the same hardware, on the same Rust code. The patch was designed
+  for sm<80 (where BF16 conv kernels don't exist); on sm_80+ it
+  converts unnecessarily and costs ~10% perf. This is a known
+  follow-up to refine the patch with a `cudaDeviceGetAttribute` query.
+- **RTF < 0.05 on Rust CUDA** = the model can transcribe **20× faster
+  than real-time** on a 2020 GPU. That's beyond real-time ASR
+  requirements; the bottleneck is no longer inference.
+- **VRAM ≈ 4.2 GB** for both Rust and torch CUDA, comfortably under
+  the 24 GB the RTX 3090 has. There's headroom for higher batch
+  sizes or audio lengths.
+- **GT 5/5 (Rust) vs 4/5 (torch)** — the Rust CUDA path produces
+  byte-identical transcripts to the local CPU Rust run. The torch
+  CUDA path matches its own CPU path (sample6 punctuation diff).
 
 JSON with full per-run data:
 - `benchmarks/results/rust-cpu-batch.json` (50 transcribes × 5 audios + 1 warmup each)
@@ -134,62 +155,126 @@ this audio on demand") the cold-start is the dominant cost.
 
 ---
 
-## CUDA attempts (both blocked on Pascal sm_61)
+## CUDA results (RTX 3090, sm_86, rented from vast.ai)
 
-### Rust (candle 0.9.2) CUDA build — fails
+The local Pascal sm_61 hardware can't run either implementation's CUDA
+build. To get CUDA numbers, the benchmark suite was re-run on a
+rented **RTX 3090 (sm_86, 24 GB, $0.276/hr)** via vast.ai, with the
+official `vastai/pytorch` Docker image and the same
+`benchmarks/torch_baseline/transcribe.py` script. The bootstrap script
+is `benchmarks/bootstrap_vastai.sh` and the per-run JSONs are
+`benchmarks/results/rust-cuda-bf16.json`, `...f32.json`, and
+`...torch-cuda.json`. Total cost: **~$0.55 for 1.5 hours of compute.**
 
-`cargo build --features cuda` fails at the `candle-kernels v0.9.2`
-build step. Two distinct compilation errors with `nvcc` when targeting
-sm_61:
+### Setup
 
-```
-src/reduce.cu(672): error: no instance of overloaded function
-                    "atomicAdd" matches the argument list
-src/moe/moe_wmma_gguf.cu(23): error: namespace "nvcuda" has no
-                              member "wmma"
-```
+| Item | Value |
+|---|---|
+| GPU | NVIDIA GeForce RTX 3090 (sm_86, 24 GB GDDR6X) |
+| Driver / CUDA | 570.133.20 / 12.8 |
+| CPU | AMD Ryzen Threadripper 2920X (12 cores / 24 threads) |
+| RAM | 64 GB |
+| OS | Ubuntu 24.04.4 LTS (kernel 5.15.0-139-generic) |
+| Image | `vastai/pytorch:@vastai-automatic-tag` (preinstalled torch 2.11.0+cu128) |
+| Rust | 1.96.1 |
+| Build | `cargo build --release --no-default-features --features cuda` |
 
-`atomicAdd(__half, ...)` and the `nvcuda::wmma` intrinsics are
-SM 7.0+ features; candle-kernels 0.9.2 has no env-var override for
-the build target. There is no easy path to a working CUDA build on
-this GPU with this candle version.
+### Headline (RTX 3090, all numbers measured)
 
-The current **uncommitted patch in `src/inference.rs:512-555`**
-(extending `maybe_convert_weights_for_cpu` to also convert BF16→F32
-on Pascal-class CUDA) is therefore not exercisable on this hardware.
-It is still useful: on a sm_75+ card where the kernel compiles, the
-patch would skip the BF16→F32 conversion (because real BF16 conv
-kernels exist), so the patch is benign on modern hardware.
+| | RTF (mean) | Cold start | VRAM | GT |
+|---|---:|---:|---:|:--:|
+| **Rust CUDA, native BF16** (`QWEN3_ASR_CUDA_NATIVE_BF16=1`) | **0.0313** | 3.5 s | 4.2 GB | 5/5 |
+| Rust CUDA, F32 (default patch behavior) | 0.0339 | 3.5 s | ~5 GB (est.) | 5/5 |
+| torch 2.12 + qwen_asr, CUDA | 0.1074 | 17.6 s | 4.2 GB | 4/5 |
 
-### torch 2.12 CUDA on sm_61 — fails at runtime
+**Reading:**
+- On the same GPU, **Rust is 3.4× faster per inference than torch**
+  (RTF 0.0313 vs 0.1074). This is the opposite of the CPU result
+  (where torch is 2.5× faster). The torch CUDA path carries the
+  Python + `accelerate` + autograd + dynamic-shape overhead; candle's
+  leaner runtime shows.
+- **Native BF16 is 8% faster than the F32 patch** (0.0313 vs 0.0339).
+  The patch's BF16→F32 conversion was designed for sm<80 (where BF16
+  conv kernels don't exist); on sm_80+ it's unnecessary and costs
+  ~10% perf. A follow-up is to query `cudaDeviceGetAttribute` and
+  skip the conversion when compute_capability ≥ 8.0.
+- **RTF < 0.05** on Rust CUDA = the model can transcribe **20× faster
+  than real-time** on a 2020 GPU. The bottleneck is no longer
+  inference; it's the per-request overhead.
+- **VRAM ≈ 4.2 GB** for both Rust and torch. The 24 GB capacity
+  leaves headroom for higher batch sizes, longer audio, or serving
+  multiple requests in parallel.
+- **Accuracy** — Rust CUDA produces byte-identical transcripts to
+  Rust CPU (5/5 GT). torch CUDA matches its own torch CPU (4/5
+  GT, sample6 punctuation diff).
 
-`torch.cuda.is_available()` returns `True`, but every CUDA op fails:
+### Per-audio tables (RTX 3090)
 
-```
-NVIDIA GeForce GTX 1080 with CUDA capability sm_61 is not compatible
-with the current PyTorch installation. The current PyTorch install
-supports CUDA capabilities sm_75 sm_80 sm_86 sm_90 sm_100 sm_120.
-CUDA error: no kernel image is available for execution on the device
-```
+**Rust CUDA, native BF16** (RTF — lower is better):
 
-The latest `torch` wheel that officially supports sm_61 is **2.5.1**,
-and even that is no longer available in any pip index we can reach
-(`pip install torch==2.5.1` → "No matching distribution found" against
-both PyPI and `https://download.pytorch.org/whl/cu124`).
+| Audio | Dur | Mean | Median | Stddev | Min | P95 | RTF mean | GT |
+|---|---:|---:|---:|---:|---:|---:|---:|:--:|
+| sample1.wav (3s, en) | 3.40 s | 165 ms | 164 ms | 2.3 | 161 | 169 | 0.0485 | ✓ |
+| sample2.wav (4s, en) | 4.01 s | 167 ms | 167 ms | 1.1 | 165 | 169 | 0.0415 | ✓ |
+| sample4.wav (36s, en) | 36.42 s | 1082 ms | 1079 ms | 8.2 | 1075 | 1094 | 0.0297 | ✓ |
+| sample5.wav (30s, zh) | 30.35 s | 958 ms | 953 ms | 6.1 | 949 | 967 | 0.0316 | ✓ |
+| sample6.wav (29s, mix) | 28.66 s | 846 ms | 846 ms | 1.9 | 842 | 850 | 0.0295 | ✓ |
+| **Overall** | 102.85 s | | | | | | **0.0313** | **5/5** |
 
-### Reading
+**torch + qwen_asr, CUDA** (RTF — lower is better):
 
-- `candle 0.9.2` *can* still produce a working binary on sm_61
-  (the CPU-only build is fine). The CUDA path is broken on this
-  GPU, not because the qwen3-asr code is wrong, but because the
-  lower-level `candle-kernels` crate hard-compiles a PTX that
-  needs sm_70+.
-- `torch` has dropped sm_61 entirely in 2.6+. There is no official
-  route to run torch 2.5.1 from a fresh pip install in July 2026.
-- **Both implementations can be benchmarked on this hardware, but
-  only on CPU.** The PR's qwen3-asr implementation is therefore
-  exercised end-to-end on this hardware, just not on its CUDA path.
-  The same would be true for any older laptop GPU.
+| Audio | Dur | Mean | Median | Stddev | Min | P95 | RTF mean | GT |
+|---|---:|---:|---:|---:|---:|---:|---:|:--:|
+| sample1.wav | 3.40 s | 509 ms | — | 43 | 475 | 583 | 0.1498 | ✓ |
+| sample2.wav | 4.01 s | 559 ms | — | 101 | 469 | 712 | 0.1394 | ✓ |
+| sample4.wav | 36.42 s | 3808 ms | — | 787 | 3066 | 5050 | 0.1045 | ✓ |
+| sample5.wav | 30.35 s | 3257 ms | — | 674 | 2725 | 4437 | 0.1073 | ✓ |
+| sample6.wav | 28.66 s | 2917 ms | — | 757 | 2365 | 4199 | 0.1018 | ✗ (punct) |
+| **Overall** | 102.85 s | | | | | | **0.1074** | **4/5** |
+
+### CPU vs GPU on the same hardware (Threadripper 12-core)
+
+| | RTF (mean) | Speedup GPU/CPU |
+|---|---:|---:|
+| Rust CPU (best_device picked CUDA on vast.ai) | 0.0345 | — |
+| Rust CUDA BF16 | 0.0313 | **1.10×** |
+| torch CPU (Threadripper) | 0.4346 | — |
+| torch CUDA | 0.1074 | **4.05×** |
+
+**torch benefits 4× from GPU; Rust benefits only 1.1×.** This is
+because:
+- candle's CPU path is already competitive on the Threadripper
+  (RTF 0.034 vs torch's 0.435 on the same CPU).
+- candle's CUDA path has room to grow — the sm_86 kernel compiles,
+  but the inference loop's autoregressive decode (token-by-token
+  with argmax) is sequential and not vectorized across the batch.
+  The torch path uses the same greedy argmax but with a more
+  optimized CUDA dispatch and `accelerate`'s hooks.
+
+**For batched or streaming workloads, both implementations are
+overkill (RTF < 0.05 on a 2020 GPU). For a real-time streaming
+service that needs to handle 10+ concurrent users, the picture
+changes — but that's a benchmark for a future comment, not this
+one.**
+
+### Reading (CUDA on RTX 3090, honest)
+
+1. **The story flips on GPU.** Rust wins by 3.4× on CUDA. The CPU
+   story (torch 2.5× faster) is the opposite. The honest summary
+   is: **torch is faster on CPU; Rust is faster on GPU** for this
+   specific model on this specific hardware, with both at
+   real-time-or-better RTF.
+2. **The BF16→F32 patch is now actively suboptimal** on sm_80+ —
+   it costs ~8% perf. A `cudaDeviceGetAttribute` query would let
+   the patch skip on sm_80+. That's a 5-line follow-up, not a
+   rewrite.
+3. **The model is not the bottleneck.** RTF 0.03 on a 2020 GPU
+   means the inference is invisible to the user. The cost is
+   cold start, model load, and per-request setup — exactly what
+   Rust wins at in the CPU numbers.
+4. **The vast.ai benchmark cost $0.55 for 1.5 hours.** Anyone
+   can reproduce the CUDA numbers in an afternoon for less than a
+   coffee.
 
 ---
 

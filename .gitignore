@@ -36,3 +36,7 @@ PROPOSAL.md
 test.wav
 # Screenshots from pricing/console pages captured during research.
 vast-ai-console.png
+
+# Vast.ai session artifacts (kept local for reference; not part of the repo)
+benchmarks/vastai_results/
+vast.aiconsole-*.png

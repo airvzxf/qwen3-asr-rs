@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "scenario": "batch-cuda",
-  "label": "rust-cpu-batch",
-  "timestamp_utc": "2026-07-07T06:05:13Z",
+  "label": "rust-cuda-bf16",
+  "timestamp_utc": "2026-07-07T06:15:17Z",
   "hardware": {
     "os": "Ubuntu 24.04.4 LTS",
     "kernel": "5.15.0-139-generic",
@@ -16,7 +16,7 @@
     "features": [
       "cuda"
     ],
-    "rust_version": "rustc 1.96.1 (31fca3adb 2026-06-26)",
+    "rust_version": "",
     "binary": "./target/release/benchmark"
   },
   "model": {
@@ -24,9 +24,9 @@
     "size_mib": 1789.1804733276367
   },
   "load": {
-    "elapsed_ms": 1688.369164,
-    "rss_mib_after": 2057.1875,
-    "rss_current_mib": 334.8984375,
+    "elapsed_ms": 1656.15541,
+    "rss_mib_after": 2057.4609375,
+    "rss_current_mib": 333.109375,
     "vm_peak_mib": 56036.65625,
     "phys_footprint_mib": 0.0
   },
@@ -42,75 +42,75 @@
       "matched_ground_truth": true,
       "runs": [
         {
-          "elapsed_ms": 178.352327,
-          "rtf": 0.052456566764705885,
+          "elapsed_ms": 165.642339,
+          "rtf": 0.048718335,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 175.75504,
-          "rtf": 0.051692658823529414,
+          "elapsed_ms": 161.531489,
+          "rtf": 0.04750926147058824,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 180.449557,
-          "rtf": 0.053073399117647066,
+          "elapsed_ms": 161.17833100000001,
+          "rtf": 0.04740539147058824,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 180.679965,
-          "rtf": 0.05314116617647059,
+          "elapsed_ms": 166.460934,
+          "rtf": 0.04895909823529412,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 181.00928399999998,
-          "rtf": 0.053238024705882354,
+          "elapsed_ms": 167.4536,
+          "rtf": 0.04925105882352942,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 175.095413,
-          "rtf": 0.05149865088235294,
+          "elapsed_ms": 167.355522,
+          "rtf": 0.04922221235294118,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 174.977033,
-          "rtf": 0.05146383323529412,
+          "elapsed_ms": 166.244205,
+          "rtf": 0.04889535441176471,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 178.65799600000003,
-          "rtf": 0.05254646941176471,
+          "elapsed_ms": 163.71977800000002,
+          "rtf": 0.048152875882352945,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 174.915023,
-          "rtf": 0.051445595000000004,
+          "elapsed_ms": 162.09644600000001,
+          "rtf": 0.04767542529411765,
           "text": "The quick brown fox jumps over the lazy dog."
         },
         {
-          "elapsed_ms": 177.678161,
-          "rtf": 0.052258282647058826,
+          "elapsed_ms": 166.494016,
+          "rtf": 0.048968828235294116,
           "text": "The quick brown fox jumps over the lazy dog."
         }
       ],
       "stats_ms": {
         "n": 10,
-        "mean": 177.7569799,
-        "median": 178.015244,
-        "stddev": 2.4594557078242336,
-        "min": 174.915023,
-        "p95": 180.86109045,
-        "p99": 180.97964528999998,
-        "max": 181.00928399999998
+        "mean": 164.817666,
+        "median": 165.94327199999998,
+        "stddev": 2.455573119646269,
+        "min": 161.17833100000001,
+        "p95": 167.4094649,
+        "p99": 167.44477297999998,
+        "max": 167.4536
       },
       "stats_rtf": {
         "n": 10,
-        "mean": 0.05228146467647059,
-        "median": 0.05235742470588235,
-        "stddev": 0.0007233693258306588,
-        "min": 0.051445595000000004,
-        "p95": 0.05319443836764706,
-        "p99": 0.05322930743823529,
-        "max": 0.053238024705882354
+        "mean": 0.04847578411764707,
+        "median": 0.048806844705882355,
+        "stddev": 0.0007222273881312564,
+        "min": 0.04740539147058824,
+        "p95": 0.04923807791176471,
+        "p99": 0.04924846264117648,
+        "max": 0.04925105882352942
       }
     },
     {
@@ -120,75 +120,75 @@
       "matched_ground_truth": true,
       "runs": [
         {
-          "elapsed_ms": 176.770634,
-          "rtf": 0.04405498666666667,
+          "elapsed_ms": 164.52237399999999,
+          "rtf": 0.041002460809968846,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 179.140953,
-          "rtf": 0.04464572037383177,
+          "elapsed_ms": 163.70668899999998,
+          "rtf": 0.04079917482866043,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 179.709121,
-          "rtf": 0.044787319875389406,
+          "elapsed_ms": 172.508795,
+          "rtf": 0.042992846105919,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 179.440891,
-          "rtf": 0.04472047127725856,
+          "elapsed_ms": 164.969012,
+          "rtf": 0.04111377246105919,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 176.648866,
-          "rtf": 0.044024639501557626,
+          "elapsed_ms": 165.027263,
+          "rtf": 0.04112828984423676,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 179.926749,
-          "rtf": 0.04484155738317757,
+          "elapsed_ms": 169.38258000000002,
+          "rtf": 0.04221372710280374,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 176.38890600000002,
-          "rtf": 0.04395985196261682,
+          "elapsed_ms": 164.543994,
+          "rtf": 0.041007848971962614,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 176.47537599999998,
-          "rtf": 0.04398140211838006,
+          "elapsed_ms": 165.726989,
+          "rtf": 0.04130267638629283,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 176.798075,
-          "rtf": 0.04406182554517134,
+          "elapsed_ms": 168.55167500000002,
+          "rtf": 0.04200664797507788,
           "text": "Speech recognition has improved a lot in recent years."
         },
         {
-          "elapsed_ms": 181.49934100000002,
-          "rtf": 0.04523348062305296,
+          "elapsed_ms": 164.82092300000002,
+          "rtf": 0.04107686554517134,
           "text": "Speech recognition has improved a lot in recent years."
         }
       ],
       "stats_ms": {
         "n": 10,
-        "mean": 178.27989119999998,
-        "median": 177.969514,
-        "stddev": 1.8611532652688365,
-        "min": 176.38890600000002,
-        "p95": 180.79167460000002,
-        "p99": 181.35780772,
-        "max": 181.49934100000002
+        "mean": 166.3760294,
+        "median": 164.99813749999998,
+        "stddev": 2.8272452735913682,
+        "min": 163.70668899999998,
+        "p95": 171.10199825,
+        "p99": 172.22743565,
+        "max": 172.508795
       },
       "stats_rtf": {
         "n": 10,
-        "mean": 0.04443112553271028,
-        "median": 0.044353772959501554,
-        "stddev": 0.0004638388200046948,
-        "min": 0.04395985196261682,
-        "p95": 0.04505711516510903,
-        "p99": 0.04519820753146418,
-        "max": 0.04523348062305296
+        "mean": 0.04146443100311527,
+        "median": 0.04112103115264798,
+        "stddev": 0.0007046094139791551,
+        "min": 0.04079917482866043,
+        "p95": 0.042642242554517124,
+        "p99": 0.04292272539563863,
+        "max": 0.042992846105919
       }
     },
     {
@@ -198,75 +198,75 @@
       "matched_ground_truth": true,
       "runs": [
         {
-          "elapsed_ms": 1190.397403,
-          "rtf": 0.03268077976664379,
+          "elapsed_ms": 1080.8808530000001,
+          "rtf": 0.029674148332189433,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1217.3356820000001,
-          "rtf": 0.03342033444063144,
+          "elapsed_ms": 1079.26975,
+          "rtf": 0.029629917638984215,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1191.4152179999999,
-          "rtf": 0.03270872252573782,
+          "elapsed_ms": 1093.073545,
+          "rtf": 0.030008882498284147,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1188.407745,
-          "rtf": 0.03262615634866163,
+          "elapsed_ms": 1083.909348,
+          "rtf": 0.029757291640356898,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1200.1393659999999,
-          "rtf": 0.03294823242278655,
+          "elapsed_ms": 1077.682539,
+          "rtf": 0.029586342868908717,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1200.491835,
-          "rtf": 0.03295790899107756,
+          "elapsed_ms": 1080.016637,
+          "rtf": 0.029650422429649968,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1240.255841,
-          "rtf": 0.034049576966369254,
+          "elapsed_ms": 1079.4931299999998,
+          "rtf": 0.02963605024021963,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1214.343487,
-          "rtf": 0.03333818770075498,
+          "elapsed_ms": 1081.405771,
+          "rtf": 0.02968855925875086,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1192.459465,
-          "rtf": 0.03273739094028827,
+          "elapsed_ms": 1072.862891,
+          "rtf": 0.029454025833905287,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         },
         {
-          "elapsed_ms": 1187.314371,
-          "rtf": 0.032596139217570354,
+          "elapsed_ms": 1073.861898,
+          "rtf": 0.029481452244337684,
           "text": "Artificial intelligence has rapidly transformed numerous industries over the past decade. From healthcare diagnostics to autonomous vehicles, machine learning models are now capable of performing tasks that once required years of human expertise. Natural language processing, in particular, has seen dramatic improvements, enabling computers to understand, generate, and translate human speech with remarkable accuracy. Researchers continue to push the boundaries of what is possible, developing systems that can reason, plan, and even demonstrate creativity."
         }
       ],
       "stats_ms": {
         "n": 10,
-        "mean": 1202.2560412999999,
-        "median": 1196.2994155,
-        "stddev": 16.977867631277203,
-        "min": 1187.314371,
-        "p95": 1229.94176945,
-        "p99": 1238.19302669,
-        "max": 1240.255841
+        "mean": 1080.2456362,
+        "median": 1079.7548834999998,
+        "stddev": 5.608772978435438,
+        "min": 1072.862891,
+        "p95": 1088.94965635,
+        "p99": 1092.24876727,
+        "max": 1093.073545
       },
       "stats_rtf": {
         "n": 10,
-        "mean": 0.033006342932052166,
-        "median": 0.03284281168153741,
-        "stddev": 0.00046610480799662827,
-        "min": 0.032596139217570354,
-        "p95": 0.03376641782978723,
-        "p99": 0.03399294513905285,
-        "max": 0.034049576966369254
+        "mean": 0.02965670929855868,
+        "median": 0.0296432363349348,
+        "stddev": 0.00015398141327207813,
+        "min": 0.029454025833905287,
+        "p95": 0.029895666612216883,
+        "p99": 0.029986239321070696,
+        "max": 0.030008882498284147
       }
     },
     {
@@ -276,75 +276,75 @@
       "matched_ground_truth": true,
       "runs": [
         {
-          "elapsed_ms": 1030.416309,
-          "rtf": 0.03395111397034596,
+          "elapsed_ms": 948.457645,
+          "rtf": 0.031250663756177924,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1031.359194,
-          "rtf": 0.0339821810214168,
+          "elapsed_ms": 946.164424,
+          "rtf": 0.031175104579901153,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1035.577494,
-          "rtf": 0.03412116948929159,
+          "elapsed_ms": 956.264467,
+          "rtf": 0.031507890181219106,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1062.79028,
-          "rtf": 0.03501780164744646,
+          "elapsed_ms": 973.509913,
+          "rtf": 0.0320761091598023,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1040.821678,
-          "rtf": 0.034293959736408565,
+          "elapsed_ms": 970.823506,
+          "rtf": 0.03198759492586491,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1041.272977,
-          "rtf": 0.034308829555189456,
+          "elapsed_ms": 974.657378,
+          "rtf": 0.03211391690280065,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1046.2510419999999,
-          "rtf": 0.03447285146622735,
+          "elapsed_ms": 953.520049,
+          "rtf": 0.03141746454695222,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1033.136236,
-          "rtf": 0.0340407326523888,
+          "elapsed_ms": 953.2933,
+          "rtf": 0.031409993410214165,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1058.385983,
-          "rtf": 0.034872684777594726,
+          "elapsed_ms": 951.9833669999999,
+          "rtf": 0.03136683252059308,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         },
         {
-          "elapsed_ms": 1108.422989,
-          "rtf": 0.03652135054365733,
+          "elapsed_ms": 949.740228,
+          "rtf": 0.03129292349258649,
           "text": "随着科技的不断进步，人工智能已经深入到我们日常生活的每个角落。在医疗领域，智能诊断系统能够通过分析医学影像，快速准确地识别疾病。在交通领域，自动驾驶技术正在逐步走向成熟。在教育领域，个性化学习系统能够根据每个学生的学习进度，提供量身定制的教学内容，让每个孩子都能得到最适合自己的教育。"
         }
       ],
       "stats_ms": {
         "n": 10,
-        "mean": 1048.8434182,
-        "median": 1041.0473275,
-        "stddev": 23.644679530246957,
-        "min": 1030.416309,
-        "p95": 1087.8882699499998,
-        "p99": 1104.3160451899998,
-        "max": 1108.422989
+        "mean": 957.8414276999999,
+        "median": 953.4066745,
+        "stddev": 10.867958320392917,
+        "min": 946.164424,
+        "p95": 974.1410187500001,
+        "p99": 974.5541061499999,
+        "max": 974.657378
       },
       "stats_rtf": {
         "n": 10,
-        "mean": 0.034558267485996705,
-        "median": 0.03430139464579901,
-        "stddev": 0.0007790668708483354,
-        "min": 0.03395111397034596,
-        "p95": 0.035844753540362435,
-        "p99": 0.03638603114299835,
-        "max": 0.03652135054365733
+        "mean": 0.0315598493476112,
+        "median": 0.03141372897858319,
+        "stddev": 0.00035808758881030877,
+        "min": 0.031175104579901153,
+        "p95": 0.032096903418451395,
+        "p99": 0.0321105142059308,
+        "max": 0.03211391690280065
       }
     },
     {
@@ -354,87 +354,87 @@
       "matched_ground_truth": true,
       "runs": [
         {
-          "elapsed_ms": 935.288526,
-          "rtf": 0.03263108682075883,
+          "elapsed_ms": 849.813231,
+          "rtf": 0.02964895703445268,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 936.541929,
-          "rtf": 0.0326748165372874,
+          "elapsed_ms": 846.654146,
+          "rtf": 0.029538740375054513,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 956.049505,
-          "rtf": 0.03335541229829917,
+          "elapsed_ms": 846.7385859999999,
+          "rtf": 0.02954168638464893,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 937.403226,
-          "rtf": 0.03270486614914959,
+          "elapsed_ms": 850.074341,
+          "rtf": 0.029658066846925422,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 992.417846,
-          "rtf": 0.03462425978194505,
+          "elapsed_ms": 845.648811,
+          "rtf": 0.029503665451373746,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 933.0596370000001,
-          "rtf": 0.032553323576101176,
+          "elapsed_ms": 845.626541,
+          "rtf": 0.029502888477976448,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 945.907425,
-          "rtf": 0.0330015673789795,
+          "elapsed_ms": 847.072155,
+          "rtf": 0.02955332420409943,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 932.1217320000001,
-          "rtf": 0.032520601203663325,
+          "elapsed_ms": 845.98823,
+          "rtf": 0.029515507370257304,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 933.9543630000001,
-          "rtf": 0.032584539485390314,
+          "elapsed_ms": 843.725421,
+          "rtf": 0.029436560697775838,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         },
         {
-          "elapsed_ms": 930.443911,
-          "rtf": 0.03246206405582207,
+          "elapsed_ms": 846.2222889999999,
+          "rtf": 0.029523673406018313,
           "text": "今天我们来讨论一下大语言模型的发展现状。Large language models like GPT and Claude have shown impressive results on a wide range of benchmarks, demonstrating strong reasoning and language understanding capabilities. 未来，随着多模态技术的进步，这些模型将能够同时处理文字、图像和语音，实现更加自然和智能的人机交互。"
         }
       ],
       "stats_ms": {
         "n": 10,
-        "mean": 943.3188100000001,
-        "median": 935.9152275,
-        "stddev": 18.8826011875084,
-        "min": 930.443911,
-        "p95": 976.05209255,
-        "p99": 989.1446953100001,
-        "max": 992.417846
+        "mean": 846.7563751,
+        "median": 846.4382175,
+        "stddev": 1.9156939803006945,
+        "min": 843.725421,
+        "p95": 849.9568414999999,
+        "p99": 850.0508411,
+        "max": 850.074341
       },
       "stats_rtf": {
         "n": 10,
-        "mean": 0.03291125372873964,
-        "median": 0.032652951679023115,
-        "stddev": 0.000658791144788779,
-        "min": 0.03246206405582207,
-        "p95": 0.0340532784143044,
-        "p99": 0.03451006350841691,
-        "max": 0.03462425978194505
+        "mean": 0.02954230702485826,
+        "median": 0.029531206890536413,
+        "stddev": 0.00006683624876757748,
+        "min": 0.029436560697775838,
+        "p95": 0.02965396743131269,
+        "p99": 0.029657246963802876,
+        "max": 0.029658066846925422
       }
     }
   ],
   "aggregate": {
     "total_audio_s": 102.85,
-    "total_inference_s": 3.5504551406,
-    "overall_rtf": 0.03452071113855129,
+    "total_inference_s": 3.2160371344,
+    "overall_rtf": 0.03126919916771998,
     "transcripts_matched": 5,
     "transcripts_total": 5,
     "all_texts_matched": true,
-    "cold_start_ms": 1688.369164,
-    "cold_start_first_inference_ms": 2252.3334130000003,
-    "cold_start_total_ms": 39147.936256
+    "cold_start_ms": 1656.15541,
+    "cold_start_first_inference_ms": 2160.7935199999997,
+    "cold_start_total_ms": 35666.594766
   }
 }
