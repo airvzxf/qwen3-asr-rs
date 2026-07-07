@@ -24,6 +24,14 @@ RESULTS_DIR="$REPO_DIR/benchmarks/results"
 REPO_URL="https://github.com/airvzxf/qwen3-asr-rs.git"
 BRANCH="bench/compare-rust-vs-torch"
 
+# vastai/pytorch template doesn't ship a `python` symlink (only `python3`).
+# Normalize early so all subsequent `python ...` invocations work.
+if ! command -v python >/dev/null 2>&1; then
+    PYTHON="python3"
+else
+    PYTHON="python"
+fi
+
 # If running inside a vast.ai Docker container, CUDA_COMPUTE_CAP is auto-detected
 # from the GPU. We override here as a safety net (the env var is read by
 # bindgen_cuda 0.1.6 before it falls back to nvidia-smi).
@@ -37,7 +45,7 @@ echo "  Host      : $(hostname)"
 echo "  GPU       : $(nvidia-smi --query-gpu=name,driver_version --format=csv,noheader)"
 echo "  CUDA cap  : $CUDA_COMPUTE_CAP (sm_$CUDA_COMPUTE_CAP)"
 echo "  CPUs      : $NPROC"
-echo "  PyTorch   : $(python -c 'import torch; print(torch.__version__, "cuda", torch.version.cuda)')"
+echo "  PyTorch   : $($PYTHON -c 'import torch; print(torch.__version__, "cuda", torch.version.cuda)')"
 echo "  Working in: $REPO_DIR"
 echo
 
@@ -70,13 +78,13 @@ git log --pretty="%h %G? %s" -1
 echo ">>> Installing qwen_asr + huggingface_hub ..."
 pip install --quiet --upgrade pip
 pip install --quiet qwen_asr huggingface_hub
-python -c "import qwen_asr; print('qwen_asr OK')"
+$PYTHON -c "import qwen_asr; print('qwen_asr OK')"
 
 # ── 4. Download the Qwen3-ASR-0.6B model ──────────────────────────────────
 mkdir -p "$(dirname "$MODEL_DIR")"
 if [ ! -f "$MODEL_DIR/model.safetensors" ]; then
     echo ">>> Downloading Qwen/Qwen3-ASR-0.6B (1.7 GB) ..."
-    python -c "
+    $PYTHON -c "
 from huggingface_hub import snapshot_download
 snapshot_download('Qwen/Qwen3-ASR-0.6B', local_dir='$MODEL_DIR',
                   allow_patterns=['*.json', '*.safetensors'])
@@ -126,7 +134,7 @@ run_torch() {
     echo "  torch baseline: $label ($device)"
     echo "=========================================="
     local start=$(date +%s)
-    time python benchmarks/torch_baseline/transcribe.py \
+    time $PYTHON benchmarks/torch_baseline/transcribe.py \
         --model-dir "$MODEL_DIR" \
         --audio-dir tests/fixtures/audio \
         --runs 10 --warmup 1 \
